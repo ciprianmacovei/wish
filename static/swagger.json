@@ -1,0 +1,15 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "api for gods",
+    "version": "1.0.0",
+    "title": "Api",
+    "contact": {
+      "email": "macoveiciprian91@gmail.com"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  }
+}
