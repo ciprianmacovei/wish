@@ -1,0 +1,67 @@
+services:
+  db:
+    # We use a mariadb image which supports both amd64 & arm64 architecture
+    image: mariadb:10-focal
+    # If you really want to use MySQL, uncomment the following line
+    #image: mysql:8
+    command: ['mysqld', '--default-authentication-plugin=mysql_native_password','--init-file=/docker-entrypoint-initdb.d/schema.sql']
+    restart: always
+    healthcheck:
+      test: ['CMD-SHELL', 'mysqladmin ping -h 127.0.0.1 --password="$$(cat /run/secrets/db-password)" --silent']
+      interval: 3s
+      retries: 5
+      start_period: 30s
+    secrets:
+      - db-password
+    volumes:
+      - db-data:/var/lib/mysql
+      - ./backend/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    networks:
+      - backnet
+    environment:
+      - MYSQL_DATABASE=wish
+      - MYSQL_USER=root
+      - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/db-password
+    expose:
+      - 3306
+      - 33060
+
+  backend:
+    build:
+      dockerfile: ./dockerfiles/server/Dockerfile
+      target: builder
+    restart: always
+    secrets:
+      - db-password
+    ports:
+      - 8000:8000
+    networks:
+      - backnet
+      - frontnet
+    depends_on:
+      db:
+        condition: service_healthy
+
+  nginx:
+    build: 
+      context: .
+      dockerfile: ./dockerfiles/nginx/Dockerfile
+    restart: always
+    volumes:
+      - ./frontend/dist:/usr/share/nginx/html
+    ports:
+      - 80:80
+    depends_on: 
+      - backend
+    networks:
+      - frontnet
+
+volumes:
+  db-data:
+secrets:
+  db-password:
+    file: ./dockerfiles/mysql/db/password.txt
+
+networks:
+  backnet:
+  frontnet:
