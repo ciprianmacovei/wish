@@ -3,18 +3,16 @@ from flask import Flask
 from flask_swagger_ui import get_swaggerui_blueprint
 import env.env as env
 
-import controllers.auth_controller.auth as auth
-
-import services.token_service.token_provider as token_provider
-import services.email_service.email_provider as email_provider
+import controllers.auth_controller.auth as auth_controller
+import controllers.wishbox_controller.wishbox as wishbox_controller
+from services.token_service import Token
+from services.email_service import Email
 
 from decorators.mysql_decorator import mysql_decorator
-import database.database_manager as db_manager
 
 env.set_env_variables()
 
 app = Flask(__name__)
-
 ### SWAGGER ###
 SWAGGER_URL = '/swagger'
 API_URL = '/static/swagger.json'
@@ -28,52 +26,66 @@ SWAGGERUI_BLUEPRINT = get_swaggerui_blueprint(
 app.register_blueprint(SWAGGERUI_BLUEPRINT, url_prefix=SWAGGER_URL)
 ### SWAGGER ###
 
-# app.config['MYSQL_HOST'] = 'localhost'
-# app.config['MYSQL_USER'] = 'root'
-# app.config['MYSQL_PASSWORD'] = 'db-78n9n'
-# app.config['MYSQL_DB'] = 'wish'
-# try:
-#     mysql = MySQL(app)
-#     cursor = mysql.connection.cursor()
-#     cursor.execute("SELECT VERSION()")
-# except Exception as e:
-#     print(e)
-
-token_service = token_provider.Token()
-email_service = email_provider.Email()
+token_service = Token()
+email_service = Email()
 
 conn = None
 
+
 @app.route('/')
 def hello_world():
-    global conn
-    if not conn:
-        conn = db_manager.DBManager(password_file='/run/secrets/db-password')
-        conn.populate_db()
-    rec = conn.query_titles()
-
-    response = ''
-    for c in rec:
-        response = response  + '<div>   Hello  ' + c + '</div>'
-    return response
+    return 'Hello World'
 
 
 @app.route('/login', methods=["POST"])
 @mysql_decorator()
 def login(connection):
-    return auth.auth_login(connection, token_service)
+    return auth_controller.auth_login(connection, token_service)
 
 
 @app.route('/register', methods=["POST"])
 @mysql_decorator()
 def register(connection):
-    return auth.auth_register(connection, email_service)
+    return auth_controller.auth_register(connection, email_service)
 
 
 @app.route('/register/<token_param>', methods=["GET"])
 @mysql_decorator()
 def register_confirmation(connection, token_param: str):
-    return auth.auth_register_confirmation(connection, token_param)
+    return auth_controller.auth_register_confirmation(connection, token_param)
+
+
+@app.route('/create', methods=["POST"])
+@mysql_decorator()
+def create_wishbox(connection):
+    auth_headers_interceptor_guard = auth_controller.intercept_auth_headers()
+    if auth_headers_interceptor_guard is None:
+        return wishbox_controller.create_wishbox(connection, token_service)
+    return auth_headers_interceptor_guard
+
+
+@app.route('/wishbox/<token_param>', methods=["GET"])
+@mysql_decorator()
+def get_public_wishbox(connection, token_param: str):
+    return wishbox_controller.get_public_wishbox(connection, token_service, token_param)
+
+
+@app.route('/wishbox', methods=["GET"])
+@mysql_decorator()
+def get_wishbox(connection):
+    auth_headers_interceptor_guard = auth_controller.intercept_auth_headers()
+    if auth_headers_interceptor_guard is None:
+        return wishbox_controller.get_wishbox(connection, token_service)
+    return auth_headers_interceptor_guard
+
+
+@app.route('/create_wishes', methods=["POST"])
+@mysql_decorator()
+def create_wishes(connection):
+    auth_headers_interceptor_guard = auth_controller.intercept_auth_headers()
+    if auth_headers_interceptor_guard is None:
+        return wishbox_controller.create_wishes(connection)
+    return auth_headers_interceptor_guard
 
 
 if __name__ == '__main__':

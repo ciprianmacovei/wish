@@ -1,35 +1,40 @@
 USE wish;
 DROP TABLE IF EXISTS users;
-DROP TABLE IF EXISTS wish_box;
+DROP TABLE IF EXISTS wishbox;
 DROP TABLE IF EXISTS wishes;
 DROP TABLE IF EXISTS wishes_comments;
 
 CREATE TABLE users (
 id INTEGER AUTO_INCREMENT PRIMARY KEY,
 user_name VARCHAR(255) NOT NULL,
-email VARCHAR(255) NOT NULL,
+email VARCHAR(255) NOT NULL UNIQUE,
 pass VARCHAR(255) NOT NULL,
 activated TINYINT(1) NOT NULL DEFAULT 0
 );
 
-CREATE TABLE wish_box (
+CREATE TABLE wishbox (
 id INTEGER AUTO_INCREMENT PRIMARY KEY,
-wish_end_date DATE NOT NULL,
-wish_paper_name VARCHAR(255) NOT NULL
+wishbox_end_date DATE NOT NULL,
+wishbox_name VARCHAR(255) NOT NULL,
+user_id INTEGER,
+FOREIGN KEY (user_id) REFERENCES users (id)
 );
 
 CREATE TABLE wishes (
 id INTEGER AUTO_INCREMENT PRIMARY KEY,
 wish_name VARCHAR(255) NOT NULL,
+wish_link TEXT DEFAULT NULL,
 wish_taken TINYINT(1) NOT NULL DEFAULT 0,
-wish_paper_id INTEGER,
-FOREIGN KEY (wish_paper_id) REFERENCES wish_paper (id)
+likes INTEGER NOT NULL DEFAULT 0,
+wishbox_id INTEGER,
+FOREIGN KEY (wishbox_id) REFERENCES wishbox (id)
 );
 
 CREATE TABLE wishes_comments (
 id INTEGER AUTO_INCREMENT PRIMARY KEY,
 comment TEXT NOT NULL,
 username VARCHAR(255) NOT NULL DEFAULT 'anonymous',
+likes INTEGER NOT NULL DEFAULT 0,
 wishes_id INTEGER,
 FOREIGN KEY (wishes_id) REFERENCES wishes (id)
 );

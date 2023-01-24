@@ -1,12 +1,12 @@
 from functools import wraps
-import database.database_manager as db_manager
+from services.database_service import DBManager
 
 def mysql_decorator():
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
             # Pass the cursor as an argument to the function
-            connection = db_manager.DBManager(password_file='/run/secrets/db-password')
+            connection = DBManager(password_file='/run/secrets/db-password')
             if connection is not None:
                 kwargs['connection'] = connection
 
