@@ -1,4 +1,4 @@
-const staticPaths = new Set(["/","/favicon.svg","/login/","/manifest.json","/profile/","/q-manifest.json","/register/","/robots.txt","/service-worker.js","/sitemap.xml","/wish/"]);
+const staticPaths = new Set(["/favicon.svg","/manifest.json","/q-manifest.json","/robots.txt","/service-worker.js","/sitemap.xml"]);
 function isStaticPath(p) {
   if (p.startsWith("/build/")) {
     return true;

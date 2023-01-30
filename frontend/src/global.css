@@ -11,5 +11,13 @@
 
 body {
   margin: 0;
-  font-family: 'Open Sans', sans-serif;
+  font-family: "Barrio", cursive;
+}
+
+button {
+  font-family: "Nunito", sans-serif !important;
+}
+
+.font-nuito {
+  font-family: "Nunito", sans-serif !important;
 }

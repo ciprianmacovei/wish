@@ -46,8 +46,8 @@ services:
       context: .
       dockerfile: ./dockerfiles/nginx/Dockerfile
     restart: always
-    volumes:
-      - ./frontend/dist:/usr/share/nginx/html
+    # volumes:
+    #   - ./frontend/dist:/usr/share/nginx/html
     ports:
       - 80:80
     depends_on: 

@@ -1,8 +1,14 @@
 import { component$ } from "@builder.io/qwik";
 import { DocumentHead } from "@builder.io/qwik-city";
 
+import { Button } from "~/components/buttons/button";
+
 export default component$(() => {
-  return <div>Hello Qwik!</div>;
+  return (
+    <div>
+      <Button text="asta la vista" />
+    </div>
+  );
 });
 
 export const head: DocumentHead = {

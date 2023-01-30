@@ -55,7 +55,7 @@ def register_confirmation(connection, token_param: str):
     return auth_controller.auth_register_confirmation(connection, token_param)
 
 
-@app.route('/create', methods=["POST"])
+@app.route('/create/wishbox', methods=["POST"])
 @mysql_decorator()
 def create_wishbox(connection):
     auth_headers_interceptor_guard = auth_controller.intercept_auth_headers()
@@ -79,12 +79,22 @@ def get_wishbox(connection):
     return auth_headers_interceptor_guard
 
 
-@app.route('/create_wishes', methods=["POST"])
+@app.route('/create/wishes', methods=["POST"])
 @mysql_decorator()
 def create_wishes(connection):
     auth_headers_interceptor_guard = auth_controller.intercept_auth_headers()
     if auth_headers_interceptor_guard is None:
         return wishbox_controller.create_wishes(connection)
+    return auth_headers_interceptor_guard
+
+
+
+@app.route('/update/wishes/contributors', methods=["POST"])
+@mysql_decorator()
+def update_wishes_contributors(connection):
+    auth_headers_interceptor_guard = auth_controller.intercept_auth_headers()
+    if auth_headers_interceptor_guard is None:
+        return wishbox_controller.update_wishes_contributions(connection)
     return auth_headers_interceptor_guard
 
 

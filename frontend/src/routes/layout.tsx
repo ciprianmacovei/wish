@@ -40,7 +40,7 @@ export default component$(() => {
         <>
           <main>
             <Navbar />
-            <section class="mt-[20vh] w-full max-sm:h-full px-10 max-sm:px-0 min-h-[100vh]">
+            <section class="mt-[20vh] w-full max-sm:h-full max-sm:px-0 min-h-[100vh]">
               <Slot />
             </section>
           </main>

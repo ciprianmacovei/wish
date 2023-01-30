@@ -2,7 +2,7 @@ import mysql.connector
 from typing import Tuple
 from flask import request
 
-import controllers.res_handler.res as res
+import response_handler.res as res
 import services.email_service.templates.template as templates
 
 from services.database_service import DBManager
@@ -14,13 +14,13 @@ from services.email_service import Email
 def intercept_auth_headers() -> Tuple[str, int]:
     header_token = request.headers.get("Authorization").split("bearer ")[1]
     if header_token is None:
-        return res.register_error_response("not authorized", 401)
+        return res.response_error_message("not authorized", 401)
     try:
         decoded_token = Token.decode_token(header_token)
         if decoded_token is None:
-            return res.register_error_response("not authorized", 401)
+            return res.response_error_message("not authorized", 401)
     except Exception as e:
-        return res.register_error_response("not authorized", 401)
+        return res.response_error_message("not authorized", 401)
 
 
 def auth_login(connection: DBManager, token_service: Token) -> Tuple[str, int]:
@@ -39,19 +39,19 @@ def auth_login(connection: DBManager, token_service: Token) -> Tuple[str, int]:
             )
             db_result = connection.cursor.fetchone()
             if db_result is None:
-                return res.login_error_response("login failed your credentials are bad", 401)
+                return res.response_error_message("login failed your credentials are bad", 401)
             elif db_result[4] == 0:
-                return res.login_error_response("please activate your account", 403)
+                return res.response_error_message("please activate your account", 403)
             else:
                 user_token = token_service.create_token(
                     {"user_id": db_result[0]})
-                return res.login_success_response(user_token)
+                return res.response_success_message_body({"token": user_token}, 200)
         except Exception as e:
-            return res.login_error_response("login failed data is invalid", 400)
+            return res.response_error_message("login failed data is invalid", 400)
         finally:
             connection.close()
     else:
-        return res.login_error_response("login failed", 400)
+        return res.response_error_message("login failed", 400)
 
 
 def auth_register(connection: DBManager, email_service: Email):
@@ -81,20 +81,20 @@ def auth_register(connection: DBManager, email_service: Email):
                     register_confirmation_template.create_template()
                     email_service.send(
                         email, "Hello there", register_confirmation_template.get_content())
+                    return res.response_success_message("registration successfully, please confirm your email address", 200)
                 except:
-                    return res.register_error_response("email failed to send", 400)
-                return res.register_success_response()
+                    return res.response_error_message("email failed to send", 400)
             except mysql.connector.Error as e:
                 if e.errno == 1062:
-                    return res.register_error_response("duplicate entry, user allready created", 409)
+                    return res.response_error_message("duplicate entry, user allready created", 409)
                 else:
-                    return res.register_error_response("register failed your credentials are bad", 401)
+                    return res.response_error_message("register failed your credentials are bad", 401)
             finally:
                 connection.close()
         else:
-            return res.register_error_response("invalid email", 400)
+            return res.response_error_message("invalid email", 400)
     else:
-        return res.register_error_response("register failed", 400)
+        return res.response_error_message("register failed", 400)
 
 
 def auth_register_confirmation(connection: DBManager, token_param: str):
@@ -111,10 +111,10 @@ def auth_register_confirmation(connection: DBManager, token_param: str):
                     {'id': user_id}
                 )
                 connection.connection.commit()
-                return res.register_confirm_success_response()
+                return res.response_success_message("authorisation was successful", 200)
             except:
-                return res.register_error_response("authorization faild", 400)
+                return res.response_error_message("authorization faild", 400)
             finally:
                 connection.close()
         else:
-            return res.register_error_response("faild to decode token", 400)
+            return res.response_error_message("faild to decode token", 400)
