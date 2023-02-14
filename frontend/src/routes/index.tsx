@@ -1,11 +1,34 @@
-import { component$ } from "@builder.io/qwik";
-import type { DocumentHead } from "@builder.io/qwik-city";
-import { useNavigate } from "@builder.io/qwik-city";
+import { component$, useClientEffect$, useContext, $ } from "@builder.io/qwik";
+import { DocumentHead, useNavigate } from "@builder.io/qwik-city";
 
 import { Button } from "~/components/buttons/button";
+import { userContext } from "~/context/context";
 
 export default component$(() => {
-  const navigate = useNavigate();
+  const userState = useContext(userContext);
+  const nagivation = useNavigate()
+
+  useClientEffect$(
+    () => {
+      const sessionToken = sessionStorage.getItem("token");
+      const localStorageToken = localStorage.getItem("token");
+      const sessionEmail = sessionStorage.getItem("email");
+      const localStorageEmail = localStorage.getItem("email");
+      const token = sessionToken || localStorageToken || null;
+      const email = sessionEmail || localStorageEmail || null;
+      userState.email = email;
+      userState.token = token;
+    },
+    { eagerness: "visible" }
+  );
+
+  const createWishbox = $(() => {
+    if (userState.email && userState.token) { 
+      nagivation('/wishbox/')
+    } else {
+      nagivation('/login/');
+    }
+  })
 
   return (
     <div class="flex flex-col max-sm:px-2 max-sm:gap-5">
@@ -13,15 +36,15 @@ export default component$(() => {
         <section class="w-1/2 max-sm:w-full flex justify-center items-center">
           <article class="flex flex-col w-8/12 gap-[30px]">
             <h1 class="text-[40px]">
-              TRANSFORMĂ-ȚI DORINȚELE ÎN CADOURI PERFECT CU
-              <img src="/images/logo.png"  class="w-[225px] h-[46px]"/>
+              TRANSFORMĂ-ȚI DORINȚELE ÎN CADOURI PERFECTE CU
+              <img src="/images/logo.png" class="w-[225px] h-[46px]" />
             </h1>
             <p class="text-[14px] lending-4 font-nuito">
               Creaza o lista cu dorintele tale si impartasasete-o cu prietenii
               si familia, astfel incat sa poata vedea ce produse v-ar fi de
               folos si sa va poata alege cadoul perfect.
             </p>
-            <Button text="Crează lista ta de dorinte >>" />
+            <Button text="Crează lista ta de dorinte >>" onClick={createWishbox}/>
           </article>
         </section>
         <section class="w-1/2 max-sm:w-full justify-center flex">
@@ -33,6 +56,7 @@ export default component$(() => {
           </article>
         </section>
       </section>
+
       <section class="bg-[#FEDEEF] flex">
         <article class="flex flex-col justify-center p-20">
           <article class="flex">
@@ -95,8 +119,69 @@ export default component$(() => {
               creaza-ti acum lista ta de dorinte si incearca sa primesti cadoul
               perfect cu ajutorul aplicatiei noastre!
             </p>
-            <Button text="Crează lista ta de dorinte >>" />
+            <Button text="Crează lista ta de dorinte >>" onClick={createWishbox}/>
           </article>
+        </article>
+      </section>
+
+      <section class="bg-[#FEDEEF] flex w-full">
+        <article class="flex flex-col justify-center p-20 w-full">
+          <article class="flex justify-center items-center">
+            <p class="text-[31px]">Testimoniale de la userii nostri</p>
+          </article>
+          <section class="flex justify-center items-center mt-4 gap-10">
+            <article class="w-[300px] h-[260px]">
+              <div class="flex flex-col gap-1 items-center">
+                <p class="font-nuito text-center">
+                  “A testimonial describing what the person thinks about this
+                  service, product or startup in general.”
+                </p>
+                <div class="bg-black rounded-full w-[100px] h-[100px]"></div>
+                <div class="font-nuito">Name</div>
+                <div class="font-nuito">Description</div>
+              </div>
+            </article>
+            <article class="w-[300px] h-[260px]">
+              <div class="flex flex-col gap-s items-center">
+                <p class="font-nuito text-center">
+                  “A testimonial describing what the person thinks about this
+                  service, product or startup in general.”
+                </p>
+                <div class="bg-black rounded-full w-[100px] h-[100px]"></div>
+                <div class="font-nuito">Name</div>
+                <div class="font-nuito">Description</div>
+              </div>
+            </article>
+            <article class="w-[300px] h-[260px]">
+              <div class="flex flex-col gap-s items-center">
+                <p class="font-nuito text-center">
+                  “A testimonial describing what the person thinks about this
+                  service, product or startup in general.”
+                </p>
+                <div class="bg-black rounded-full w-[100px] h-[100px]"></div>
+                <div class="font-nuito">Name</div>
+                <div class="font-nuito">Description</div>
+              </div>
+            </article>
+          </section>
+        </article>
+      </section>
+
+      <section class="flex flex-row justify-center items-center p-20">
+        <article class="flex flex-col items-center w-8/12">
+          <article class="w-8/12 flex flex-col justify-center">
+            <h1 class="text-[48px] text-center">
+              Vine ziua ta? Pregateste-ti lista de dorinte cu Wishbox!
+            </h1>
+            <Button text="Crează lista ta de dorinte >>" onClick={createWishbox}/>
+          </article>
+        </article>
+        <article class="flex gap-1 items-center justify-center w-4/12">
+          <img
+            class="w-8/12"
+            src="/images/rightsidelastsection.png"
+            alt="wishbox love and carring"
+          />
         </article>
       </section>
     </div>
@@ -104,11 +189,11 @@ export default component$(() => {
 });
 
 export const head: DocumentHead = {
-  title: "Welcome to Qwik",
+  title: "Welcome to WishBox",
   meta: [
     {
       name: "description",
-      content: "Qwik site description",
+      content: "Wishbox is a simple website that brings your wishes to life",
     },
   ],
 };

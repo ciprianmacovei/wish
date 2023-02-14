@@ -1,37 +1,33 @@
-import * as dotenv from 'dotenv'
-import axios from "axios";
-
-dotenv.config()
-
-interface ResLogin {
-  token: string;
-}
+import axios, { AxiosResponse } from "axios";
 
 export default class AuthService {
+  static url = "http://localhost/api";
 
-  static login(password: string, email?: string, username?: string): Promise<ResLogin> {
-    const bodyData: string = JSON.stringify({
+  static login(password: string, email: string): Promise<AxiosResponse> {
+    const bodyData = {
       email,
-      username,
       password,
+    };
+    return axios.post(this.url + "/login", bodyData, {
+      headers: { "Content-Type": "application/json" },
     });
-    return axios.post(
-      process.env.APP_URL + "/login/",
-      { body: bodyData },
-      { headers: { "Content-Type": "application/json" } }
-    );
   }
 
-  static register(password: string, email: string, username: string): Promise<boolean> {
-    const bodyData: string = JSON.stringify({
+  static register(password: string, email: string): Promise<AxiosResponse> {
+    const bodyData = {
       email,
-      username,
       password,
+    };
+    return axios.post(this.url + "/register", bodyData, {
+      headers: { "Content-Type": "application/json" },
     });
-    return axios.post(
-      process.env.APP_URL + "/register/",
-      { body: bodyData },
-      { headers: { "Content-Type": "application/json" } }
-    );
+  }
+
+  static registerConfirmed(token: string): Promise<AxiosResponse> {
+    return axios.get(this.url + `/register/${token}`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
   }
 }

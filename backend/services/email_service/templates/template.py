@@ -17,7 +17,7 @@ class Template:
             if self.data.get("user_id") is not None:
                 try:
                     generated_token = token_service.create_token({"user_id": self.data.get("user_id")})
-                    registration_activation_link = "http://localhost:8000/register/%s" % generated_token
+                    registration_activation_link = "http://localhost/api/register/%s" % generated_token
                     self.content = html.REGISTER_ACTIVATION_TEMPLATE % \
                                    (registration_activation_link, registration_activation_link)
                 except Exception as e:

@@ -1,58 +1,132 @@
-import { component$, useClientEffect$ } from "@builder.io/qwik";
-import { DocumentHead } from "@builder.io/qwik-city";
-import VanillaCalendar from "@uvarov.frontend/vanilla-calendar";
-import "@uvarov.frontend/vanilla-calendar/build/vanilla-calendar.min.css";
+import {
+  component$,
+  useContext,
+  $,
+  QwikChangeEvent,
+  useStore,
+  // useResource$,
+} from "@builder.io/qwik";
+import { DocumentHead, useNavigate } from "@builder.io/qwik-city";
+import { Button } from "~/components/buttons/button";
 
-import { ComboBox } from "~/components/combo-box";
+import { FormControl } from "~/components/form-control/form-control";
+import { Modal } from "~/components/modal/modal";
+import { modalsContext } from "~/context/context";
+import WishboxService from "~/service/wishbox";
 
 export default component$(() => {
-  useClientEffect$(
-    () => {
-      const calendar = new VanillaCalendar("#calendar");
-      calendar.init();
-    },
-    {
-      eagerness: "visible", // 'load' | 'visible' | 'idle'
+  const navigation = useNavigate();
+  const modalsState = useContext(modalsContext);
+  const wishboxState = useStore({
+    wishboxName: "",
+    wishboxEndDate: "",
+  });
+
+  // const wishboxResources = useResource$<Promise<Wishbox[] | undefined>>(
+  //   async ({ cleanup }) => {
+  //     const abortController = new AbortController();
+  //     cleanup(() => abortController.abort("cleanup"));
+  //     try {
+  //       const res = await WishboxService.setToken().getWishboxes(abortController);
+  //       if (res) {
+  //         console.log(res, "@@@@@@@@");
+  //         return res;
+  //       } else {
+  //         WishboxService.noTokenRequest(navigation);
+  //       }
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   }
+  // );
+
+  const openCreateWishboxModal = $(() => {
+    modalsState.showCreateWishbox = true;
+  });
+
+  const getWishboxName = $((Event: QwikChangeEvent<HTMLInputElement>) => {
+    wishboxState.wishboxName = Event.target.value;
+  });
+
+  const getWishboxEndDate = $((Event: QwikChangeEvent<HTMLInputElement>) => {
+    wishboxState.wishboxEndDate = Event.target.value;
+  });
+
+  const onCreateWishbox = $(async () => {
+    try {
+      modalsState.loader = true;
+      const response = await WishboxService.setToken().createWishbox(
+        wishboxState.wishboxEndDate,
+        wishboxState.wishboxName
+      );
+      modalsState.loader = false;
+      modalsState.showCreateWishbox = false;
+      if (response) {
+        console.log(response);
+      } else {
+        WishboxService.noTokenRequest(navigation);
+      }
+    } catch (e) {
+      console.log(e);
+      modalsState.loader = false;
     }
-  );
+  });
+
   return (
     <>
-      <section class="flex flex-col gap-4">
-        <section class="flex max-sm:flex-col max-sm:justify-center max-sm:items-center">
-          <section class="flex flex-col w-2/3 items-center gap-4">
-            <article class="w-[70%]">
-              <p> Description: </p>
-              <p>
-                Here u can add your wishes set a date when the wish will end and
-                share it with ur friend, they will be able to check ur bucket
-                list or add other things in the basket that u could like, every
-                time they make a change you will recive a message via email
-              </p>
-            </article>
-            <article>
-              <p class="text-center">Wish name</p>
-              <input
-                class="min-w-[200px] md:w-[300px] lg:w-[400px] h-10 px-4 py-[6px] border-2 border-solid border-secondary rounded-md focus:border-secondary focus:outline-none flex"
-                type="text"
-              />
-            </article>
-            <article class="flex flex-col justify-center items-center">
-              <ComboBox/>
-            </article>
-          </section>
-          <section class="flex flex-col w-1/3 max-sm:justify-center max-sm:items-center">
-            <article>
-              <p>Time till wishes end</p>
-              <div id="calendar" class="bg-pink-200"></div>
-            </article>
-          </section>
-        </section>
-        <section class="w-full flex justify-center items-center">
-          <button class="rounded-[50px] w-[150px] h-[40px] bg-orange-200 hover:scale-110 hover:border-solid hover:border-2 hover:border-pink-500 duration-300 font-bold text-red-600">
-            Create a wish
-          </button>
+      <section class="flex w-full justify-center items-center">
+        <section class="flex flex-col w-8/12 justify-center items-center gap-4">
+          <article>
+            <h1 class="text-[4rem]">Listele tale</h1>
+          </article>
+          <article class="w-2/5">
+            <img
+              src="/images/rightpicturelanding.png"
+              alt="wishbox love and carring"
+            />
+          </article>
+          <article>
+            <p class="text-[2rem]">Nu ai creata nicio lista</p>
+          </article>
+          <Button
+            text="Creaza lista ta de dorinte"
+            onClick={openCreateWishboxModal}
+          />
         </section>
       </section>
+      {modalsState.showCreateWishbox && (
+        <Modal>
+          <section class="flex flex-col gap-10">
+            <article>
+              <p>Alege un nume pentru lista ta de dorinte!</p>
+            </article>
+            <article>
+              <FormControl
+                type="text"
+                id="wishbox_name"
+                label="Denumire"
+                name="wishbox_name"
+                onEvent={getWishboxName}
+              />
+            </article>
+            <article>
+              <FormControl
+                type="date"
+                id="wishbox_date"
+                label="Data la care ia sfarsit lista ta de dorinte"
+                name="wishbox_end_date"
+                onEvent={getWishboxEndDate}
+              />
+            </article>
+            <article class="w-full flex items-center justify-center">
+              <Button
+                onClick={onCreateWishbox}
+                text="Creaza o noua lista de dorinte"
+              />
+            </article>
+          </section>
+        </Modal>
+      )}
     </>
   );
 });

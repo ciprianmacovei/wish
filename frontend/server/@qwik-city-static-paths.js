@@ -1,5 +1,9 @@
-const staticPaths = new Set(["/favicon.svg","/manifest.json","/q-manifest.json","/robots.txt","/service-worker.js","/sitemap.xml"]);
-function isStaticPath(p) {
+const staticPaths = new Set(["/favicon.svg","/images/backmodal.png","/images/closemodal.png","/images/landingpage.png","/images/leftpicturelanding.png","/images/logo.png","/images/question.png","/images/register.png","/images/rightpicturelanding.png","/images/rightsidelastsection.png","/images/smile.png","/manifest.json","/q-manifest.json","/robots.txt","/service-worker.js","/sitemap.xml"]);
+function isStaticPath(method, url) {
+  if (method.toUpperCase() !== 'GET') {
+    return false;
+  }
+  const p = url.pathname;
   if (p.startsWith("/build/")) {
     return true;
   }
@@ -8,6 +12,15 @@ function isStaticPath(p) {
   }
   if (staticPaths.has(p)) {
     return true;
+  }
+  if (p.endsWith('/q-data.json')) {
+    const pWithoutQdata = p.replace(/\/q-data.json$/, '');
+    if (staticPaths.has(pWithoutQdata + '/')) {
+      return true;
+    }
+    if (staticPaths.has(pWithoutQdata)) {
+      return true;
+    }
   }
   return false;
 }

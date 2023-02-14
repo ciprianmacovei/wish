@@ -1,1 +1,0 @@
-import{c as e,T as t,_ as i}from"./q-26d69490.js";const s=e(t(()=>i(()=>import("./q-3452a1cc.js"),["build/q-3452a1cc.js","build/q-26d69490.js"]),"s_Ye3VmDwgdT4")),a={title:"Welcome to Wisher Profile",meta:[{name:"description",content:"This is the main page where u can create your wishes and share with others."}]};export{s as default,a as head};

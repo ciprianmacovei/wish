@@ -1,21 +1,20 @@
-import * as dotenv from "dotenv";
+import { RouteNavigate } from "@builder.io/qwik-city";
 import axios from "axios";
-
-dotenv.config();
+import Swal from "sweetalert2";
 
 interface CreateWishboxResponse {
   link: string;
   id: number;
 }
 
-interface Wishbox {
+export interface Wishbox {
   id: number;
   wishbox_end_date: string;
   wishbox_name: string;
   wishes: Array<Wishes>;
 }
 
-interface Wishes {
+export interface Wishes {
   id: number;
   wish_name: string;
   wish_link: string | null;
@@ -27,49 +26,86 @@ interface Wishes {
 }
 
 export default class WishboxService {
-  static getWishboxes(): Promise<Array<Wishbox>> {
-    return axios.get(process.env.APP_URL + "/login/", {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + localStorage.getItem("token"),
-      },
-    });
+  static url = "http://localhost/api";
+  static token: string | undefined;
+
+  static setToken() {
+    if (this.token === undefined) {
+      if (sessionStorage.getItem("token")) {
+        this.token = sessionStorage.getItem("token") as string;
+      }
+      if (localStorage.getItem("token")) {
+        this.token = localStorage.getItem("token") as string;
+      }
+    }
+    return this
+  }
+
+  static getWishboxes(signal: AbortController): Promise<Array<Wishbox>> | undefined {
+    if (this.token) {
+      return axios.get(this.url + "/wishbox", {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + this.token,
+        },
+        signal: signal?.signal,
+      });
+    }
+    return undefined;
   }
 
   static createWishbox(
     wishbox_end_date: string,
     wishbox_name: string
-  ): Promise<CreateWishboxResponse> {
-    const bodyData: string = JSON.stringify({
-      wishbox_end_date,
-      wishbox_name,
-    });
-    return axios.post(
-      process.env.APP_URL + "/create/wishbox",
-      { body: bodyData },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + localStorage.getItem("token"),
-        },
-      }
-    );
+  ): Promise<CreateWishboxResponse> | undefined {
+    if (this.token) {
+      const bodyData = {
+        wishbox_end_date,
+        wishbox_name,
+      };
+      return axios.post(
+        this.url + "/create/wishbox",
+        bodyData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
+        }
+      );
+    }
+    return undefined;
   }
 
   static createWishes(
     password: string,
     email: string,
     username: string
-  ): Promise<boolean> {
-    const bodyData: string = JSON.stringify({
-      email,
-      username,
-      password,
-    });
-    return axios.post(
-      process.env.APP_URL + "/register/",
-      { body: bodyData },
-      { headers: { "Content-Type": "application/json" } }
-    );
+  ): Promise<boolean> | undefined {
+    if (this.token) {
+      const bodyData = {
+        email,
+        username,
+        password,
+      }
+      return axios.post(
+        this.url + "/register",
+        bodyData,
+        { headers: { "Content-Type": "application/json" } }
+      );
+    }
+    return undefined;
+  }
+
+  static noTokenRequest(navigation: RouteNavigate): void {
+    if (!this.token) {
+      navigation("/login/");
+      Swal.fire({
+        title: "Your login credentials have expired!",
+        text: "Please login again!",
+        icon: "error",
+        confirmButtonText: "Ok",
+      });
+    }
   }
 }

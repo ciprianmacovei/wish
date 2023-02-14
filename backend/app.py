@@ -32,30 +32,30 @@ email_service = Email()
 conn = None
 
 
-@app.route('/')
+@app.route('/api')
 def hello_world():
     return 'Hello World'
 
 
-@app.route('/login', methods=["POST"])
+@app.route('/api/login', methods=["POST"])
 @mysql_decorator()
 def login(connection):
     return auth_controller.auth_login(connection, token_service)
 
 
-@app.route('/register', methods=["POST"])
+@app.route('/api/register', methods=["POST"])
 @mysql_decorator()
 def register(connection):
     return auth_controller.auth_register(connection, email_service)
 
 
-@app.route('/register/<token_param>', methods=["GET"])
+@app.route('/api/register/<token_param>', methods=["GET"])
 @mysql_decorator()
 def register_confirmation(connection, token_param: str):
     return auth_controller.auth_register_confirmation(connection, token_param)
 
 
-@app.route('/create/wishbox', methods=["POST"])
+@app.route('/api/create/wishbox', methods=["POST"])
 @mysql_decorator()
 def create_wishbox(connection):
     auth_headers_interceptor_guard = auth_controller.intercept_auth_headers()
@@ -64,13 +64,13 @@ def create_wishbox(connection):
     return auth_headers_interceptor_guard
 
 
-@app.route('/wishbox/<token_param>', methods=["GET"])
+@app.route('/api/wishbox/<token_param>', methods=["GET"])
 @mysql_decorator()
 def get_public_wishbox(connection, token_param: str):
     return wishbox_controller.get_public_wishbox(connection, token_service, token_param)
 
 
-@app.route('/wishbox', methods=["GET"])
+@app.route('/api/wishbox', methods=["GET"])
 @mysql_decorator()
 def get_wishbox(connection):
     auth_headers_interceptor_guard = auth_controller.intercept_auth_headers()
@@ -79,7 +79,7 @@ def get_wishbox(connection):
     return auth_headers_interceptor_guard
 
 
-@app.route('/create/wishes', methods=["POST"])
+@app.route('/api/create/wishes', methods=["POST"])
 @mysql_decorator()
 def create_wishes(connection):
     auth_headers_interceptor_guard = auth_controller.intercept_auth_headers()
@@ -89,7 +89,7 @@ def create_wishes(connection):
 
 
 
-@app.route('/update/wishes/contributors', methods=["POST"])
+@app.route('/api/update/wishes/contributors', methods=["POST"])
 @mysql_decorator()
 def update_wishes_contributors(connection):
     auth_headers_interceptor_guard = auth_controller.intercept_auth_headers()
