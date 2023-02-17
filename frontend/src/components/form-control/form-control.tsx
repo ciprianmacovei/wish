@@ -59,7 +59,7 @@ export const FormControl = component$(
           placeholder={label}
           class={`placeholder:text-black focus:outline-none border-solid border-[1px] ${
             validationError ? "border-red-500" : "border-black"
-          }  rounded-[4px] py-[0.4em] px-[1em] duration-200 hover:text-black focus:bg-[#FECE31] focus:translate-x-[-0.25rem] focus:translate-y-[-0.25rem] focus:shadow-[0.25rem_0.25rem_black] active:translate-0 active:shadow-none font-[18px] leading-8 !bg-white`}
+          } rounded-[4px] py-[0.4em] px-[1em] duration-200 hover:text-black focus:bg-[#FECE31] focus:translate-x-[-0.25rem] focus:translate-y-[-0.25rem] focus:shadow-[0.25rem_0.25rem_black] active:translate-0 active:shadow-none font-[18px] leading-8 bg-white`}
           id={id}
           type={type}
           name={name}

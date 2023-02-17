@@ -1,0 +1,14 @@
+FROM node:18-alpine3.17 AS builder
+RUN apk update
+RUN apk add --update npm
+RUN npm i -g n && npm i -g pm2
+RUN n lts & PATH=$PATH
+
+WORKDIR /frontend
+COPY ./frontend .
+
+RUN npm i 
+
+EXPOSE 5173
+
+CMD [ "pm2-runtime", "start", "ecosystem.config.js" ]

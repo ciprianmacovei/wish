@@ -25,6 +25,7 @@ export default component$(() => {
         <RouterHead />
       </head>
       <body lang="en">
+        <div class="bg-[#000000] border-red-500 bg-gray-400 w-[280px] underline hidden"></div>
         <RouterOutlet />
         <ServiceWorkerRegister />
         <script src="https://use.fontawesome.com/9392801cbf.js"></script>

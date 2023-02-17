@@ -24,7 +24,7 @@ export default component$(() => {
 
   const createWishbox = $(() => {
     if (userState.email && userState.token) { 
-      nagivation('/wishbox/')
+      nagivation('/wish/')
     } else {
       nagivation('/login/');
     }

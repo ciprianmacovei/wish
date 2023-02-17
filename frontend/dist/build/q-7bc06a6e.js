@@ -1,1 +1,0 @@
-import{Q as e,W as t,_ as i}from"./q-88b2fa1c.js";const s=e(t(()=>i(()=>import("./q-e4f2712e.js"),["build/q-e4f2712e.js","build/q-d6302ed2.js","build/q-88b2fa1c.js"]),"s_xYL1qOwPyDI")),a={title:"Welcome to WishBox",meta:[{name:"description",content:"Wishbox is a simple website that brings your wishes to life"}]};export{s as default,a as head};

@@ -3,10 +3,19 @@ services:
     # We use a mariadb image which supports both amd64 & arm64 architecture
     image: mariadb:10-focal
     # If you really want to use MySQL, uncomment the following line
-    command: ['mysqld', '--default-authentication-plugin=mysql_native_password','--init-file=/docker-entrypoint-initdb.d/schema.sql']
+    command:
+      [
+        'mysqld',
+        '--default-authentication-plugin=mysql_native_password',
+        '--init-file=/docker-entrypoint-initdb.d/schema.sql'
+      ]
     restart: always
     healthcheck:
-      test: ['CMD-SHELL', 'mysqladmin ping -h 127.0.0.1 --password="$$(cat /run/secrets/db-password)" --silent']
+      test:
+        [
+          'CMD-SHELL',
+          'mysqladmin ping -h 127.0.0.1 --password="$$(cat /run/secrets/db-password)" --silent'
+        ]
       interval: 3s
       retries: 5
       start_period: 30s
@@ -27,7 +36,7 @@ services:
 
   backend:
     build:
-      dockerfile: ./dockerfiles/server/Dockerfile
+      dockerfile: ./dockerfiles/backend/Dockerfile
       target: builder
     restart: always
     secrets:
@@ -41,8 +50,19 @@ services:
       db:
         condition: service_healthy
 
+  frontend:
+    build:
+      dockerfile: ./dockerfiles/frontend/Dockerfile
+      target: builder
+    restart: always
+    ports:
+      - 5173:5173
+    networks:
+      - backnet
+      - frontnet
+
   nginx:
-    build: 
+    build:
       context: .
       dockerfile: ./dockerfiles/nginx/Dockerfile
     restart: always
@@ -50,10 +70,12 @@ services:
     #   - ./frontend/dist:/usr/share/nginx/html
     ports:
       - 80:80
-    depends_on: 
+    depends_on:
       - backend
+      - frontend
     networks:
       - frontnet
+      - backnet
 
 volumes:
   db-data:
