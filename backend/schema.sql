@@ -16,8 +16,9 @@ CREATE TABLE wishbox (
 id INTEGER AUTO_INCREMENT PRIMARY KEY,
 wishbox_end_date DATE NOT NULL,
 wishbox_name VARCHAR(255) NOT NULL,
+link TEXT DEFAULT NULL,
 user_id INTEGER,
-FOREIGN KEY (user_id) REFERENCES users (id)
+FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
 CREATE TABLE wishes (
@@ -30,7 +31,9 @@ likes INTEGER NOT NULL DEFAULT 0,
 price FLOAT NOT NULL DEFAULT 0,
 contributors_price FLOAT NOT NULL DEFAULT 0,
 wishbox_id INTEGER,
-FOREIGN KEY (wishbox_id) REFERENCES wishbox (id)
+FOREIGN KEY (wishbox_id) REFERENCES wishbox (id) ON DELETE CASCADE,
+user_id INTEGER,
+FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
 CREATE TABLE wishes_comments (
@@ -39,5 +42,5 @@ comment TEXT NOT NULL,
 username VARCHAR(255) NOT NULL DEFAULT 'anonymous',
 likes INTEGER NOT NULL DEFAULT 0,
 wishes_id INTEGER,
-FOREIGN KEY (wishes_id) REFERENCES wishes (id)
+FOREIGN KEY (wishes_id) REFERENCES wishes (id) ON DELETE CASCADE
 );

@@ -66,8 +66,8 @@ export default component$(() => {
           loginState.password,
           loginState.email
         );
-        console.log(response, "success");
-        if (rememberRef.value?.value) {
+        console.log(rememberRef.value?.value, "success");
+        if (rememberRef.value?.checked) {
           localStorage.setItem("email", loginState.email);
           localStorage.setItem("token", response.data.token);
         } else {
@@ -116,7 +116,7 @@ export default component$(() => {
             <section class="flex flex-col">
               <article>
                 <FormControl
-                  name="email"
+                  name="login_email"
                   type="text"
                   label="Adresa de email"
                   id="login_email"

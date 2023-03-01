@@ -146,55 +146,59 @@ export default component$(() => {
     <div class="h-[100vh] w-[100vw]">
       <section class="w-full h-full flex flex-col justify-center items-center bg-[url('/images/landingpage.png')] bg-cover">
         <section class="w-[623px] h-[684px] bg-[#FFF5FA] text-black flex flex-col items-center justify-center gap-[20px]">
-          <article>
-            <p class="font-bold text-center text-[32px] px-4">
-              Creaza un cont nou
-            </p>
-          </article>
-          <section class="flex flex-col gap-4">
+          <section class="w-2/3">
             <article>
-              <FormControl
-                type="text"
-                name="register_email"
-                id="register_email"
-                label="Adresa de email"
-                onEvent={getEmail}
-                validationError={registerState.emailValidation}
-                validationMessage={registerState.emailValidationErrorMessage}
-              />
+              <p class="font-bold text-center text-[32px] py-4">
+                Creaza un cont nou
+              </p>
             </article>
-            <article>
-              <FormControl
-                type="password"
-                name="register_password"
-                id="register_password"
-                label="Parola"
-                onEvent={getPassword}
-                validationError={registerState.passwordValidation}
-                validationMessage={registerState.passwordValidationErrorMessage}
-              />
-            </article>
-            <article>
-              <FormControl
-                type="password"
-                name="register_confirm_password"
-                id="register_confirm_password"
-                label="Confirmare Parola"
-                onEvent={getConfirmPassword}
-                validationError={registerState.confirmPasswordValidation}
-                validationMessage={
-                  registerState.confirmPasswordValidationErrorMessage
-                }
-              />
-            </article>
-            <article class="w-full flex justify-center items-center">
-              <Button
-                w="280px"
-                text="Creaza un cont nou"
-                onClick={register}
-                disabled={registerState.disabledRegisterButton}
-              />
-            </article>
+            <section class="flex flex-col gap-4">
+              <article>
+                <FormControl
+                  type="text"
+                  name="register_email"
+                  id="register_email"
+                  label="Adresa de email"
+                  onEvent={getEmail}
+                  validationError={registerState.emailValidation}
+                  validationMessage={registerState.emailValidationErrorMessage}
+                />
+              </article>
+              <article>
+                <FormControl
+                  type="password"
+                  name="register_password"
+                  id="register_password"
+                  label="Parola"
+                  onEvent={getPassword}
+                  validationError={registerState.passwordValidation}
+                  validationMessage={
+                    registerState.passwordValidationErrorMessage
+                  }
+                />
+              </article>
+              <article>
+                <FormControl
+                  type="password"
+                  name="register_confirm_password"
+                  id="register_confirm_password"
+                  label="Confirmare Parola"
+                  onEvent={getConfirmPassword}
+                  validationError={registerState.confirmPasswordValidation}
+                  validationMessage={
+                    registerState.confirmPasswordValidationErrorMessage
+                  }
+                />
+              </article>
+              <article class="w-full flex justify-center items-center">
+                <Button
+                  w="280px"
+                  text="Creaza un cont nou"
+                  onClick={register}
+                  disabled={registerState.disabledRegisterButton}
+                />
+              </article>
+            </section>
           </section>
         </section>
       </section>

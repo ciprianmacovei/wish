@@ -1,4 +1,4 @@
-import { component$, useClientEffect$, useStore, $ } from "@builder.io/qwik";
+import { component$, useStore, $, useBrowserVisibleTask$ } from "@builder.io/qwik";
 import { DocumentHead, useLocation, useNavigate } from "@builder.io/qwik-city";
 import { Button } from "~/components/buttons/button";
 import AuthService from "~/service/auth";
@@ -14,16 +14,17 @@ export default component$(() => {
     nagivation("/login/");
   });
 
-  useClientEffect$(
+  useBrowserVisibleTask$(
     async () => {
       try {
-        await AuthService.registerConfirmed(location.params.token);
+        const response = await AuthService.registerConfirmed(location.params.token);
+        console.log("am intrat", response)
         registrationConfirmState.status = 200;
       } catch (err) {
         registrationConfirmState.status = 400;
       }
     },
-    { eagerness: "visible" }
+    { strategy: "document-ready"}
   );
 
   return (

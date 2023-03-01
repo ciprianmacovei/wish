@@ -1,4 +1,4 @@
-import { createContext } from "@builder.io/qwik";
+import { createContextId } from "@builder.io/qwik";
 
 export interface UserType {
   email: string | null;
@@ -11,6 +11,12 @@ export interface ModalType {
   loader: boolean;
 }
 
-export const userContext = createContext<UserType>('user-context');
+export interface AppStateType {
+  loading: boolean;
+}
 
-export const modalsContext = createContext<ModalType>('modal-context');
+export const userContext = createContextId<UserType>('user-context');
+
+export const modalsContext = createContextId<ModalType>('modal-context');
+
+export const applicationContext = createContextId<AppStateType>('application-context');

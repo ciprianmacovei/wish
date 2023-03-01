@@ -19,7 +19,6 @@ class ScalpImageSource:
         # Initialize a variable to store the largest image src
         largest_img_src = ""
         largest_img_size = 0
-
         for img in images:
             # Get the src attribute of the image
             img_src = img.get("src")

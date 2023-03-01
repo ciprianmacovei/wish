@@ -4,6 +4,11 @@ export const PASSWORD_REQUIRED = "Parola este necompletata";
 export const PASSWORD_INVALID_LENGTH = "Parola ta trebuie sa aiba cel putin 8 caractere";
 export const CONFIRM_PASSWORD_REQUIRED = "Parola este necompletata";
 export const CONFIRM_PASSWORD_DOSE_NOT_MATCH = "Parolele nu coincid";
-
-
+export const WISHBOX_NAME_REQUIRED = "Denumirea este necompletata";
+export const WISH_NAME_REQUIRED = "Denumirea este necompletata";
+export const WISHBOX_DATE = "Selecteaza o data valida, nu poti selecta o data din trecut";
+export const WISHES_LINK_REQUIRED = "Linkul produsului este necompletata";
+export const WISHES_LINK_FORMAT_ERROR = "Linkul nu are un format bun";
+export const WISHES_PRICE_REQUIRED = "Pretul produsului este necompletat";
+export const WISHES_PRICE_NAN = "Pretul produsului nu este un numar"
 export const EMAIL_REGEX = /[^\s]*@[a-z0-9.-]*/i;

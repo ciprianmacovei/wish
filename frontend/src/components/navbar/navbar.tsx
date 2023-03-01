@@ -15,7 +15,7 @@ export const Navbar = component$(() => {
   const NavbarLinks: NavbarLinksProps[] = [
     { name: "Home", route: "/" },
     { name: "Profile", route: "/profile/" },
-    { name: "Wish", route: "/wish/" },
+    { name: "MyWishbox", route: "/wish/" },
   ];
 
   const goToRegisterOrLogin = $(() => {

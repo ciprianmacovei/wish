@@ -1,16 +1,18 @@
 import { RouteNavigate } from "@builder.io/qwik-city";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import Swal from "sweetalert2";
 
 interface CreateWishboxResponse {
+  [x: string]: any;
   link: string;
   id: number;
 }
 
 export interface Wishbox {
-  id: number;
+  wishbox_id: number;
   wishbox_end_date: string;
   wishbox_name: string;
+  link: string;
   wishes: Array<Wishes>;
 }
 
@@ -38,10 +40,12 @@ export default class WishboxService {
         this.token = localStorage.getItem("token") as string;
       }
     }
-    return this
+    return this;
   }
 
-  static getWishboxes(signal: AbortController): Promise<Array<Wishbox>> | undefined {
+  static getWishboxes(
+    signal: AbortController
+  ): Promise<AxiosResponse<{ data: Wishbox }>> | undefined {
     if (this.token) {
       return axios.get(this.url + "/wishbox", {
         headers: {
@@ -63,36 +67,67 @@ export default class WishboxService {
         wishbox_end_date,
         wishbox_name,
       };
-      return axios.post(
-        this.url + "/create/wishbox",
-        bodyData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + localStorage.getItem("token"),
-          },
-        }
-      );
+      return axios.post(this.url + "/create/wishbox", bodyData, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + this.token,
+        },
+      });
+    }
+    return undefined;
+  }
+
+  static deleteWishbox(
+    wishbox_id: number
+  ): Promise<AxiosResponse<{ data: Wishbox }>> | undefined {
+    if (this.token) {
+      return axios.delete(this.url + "/delete/wishbox", {
+        data: {
+          id: wishbox_id,
+        },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + this.token,
+        },
+      });
     }
     return undefined;
   }
 
   static createWishes(
-    password: string,
-    email: string,
-    username: string
+    wish_name: string,
+    wishbox_id: number,
+    wish_link: string,
+    price: string,
   ): Promise<boolean> | undefined {
     if (this.token) {
       const bodyData = {
-        email,
-        username,
-        password,
-      }
-      return axios.post(
-        this.url + "/register",
-        bodyData,
-        { headers: { "Content-Type": "application/json" } }
-      );
+        wish_name,
+        wishbox_id,
+        wish_link,
+        price,
+      };
+      return axios.post(this.url + "/create/wishes", bodyData, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + this.token,
+        },
+      });
+    }
+    return undefined;
+  }
+
+  static deleteWishes(wish_id: number) {
+    if (this.token) {
+      return axios.delete(this.url + "/delete/wishes", {
+        data: {
+          id: wish_id,
+        },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + this.token,
+        },
+      });
     }
     return undefined;
   }

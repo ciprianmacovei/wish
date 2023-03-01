@@ -9,7 +9,7 @@ COPY /backend .
 
 RUN --mount=type=cache,target=/root/.cache/pip \
     pip3 install -r requirements.txt
-
+RUN apt update && apt install cron -y
 #add flask variables
 ENV FLASK_APP app.py
 #ENV FLASK_ENV development

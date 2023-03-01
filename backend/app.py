@@ -79,14 +79,31 @@ def get_wishbox(connection):
     return auth_headers_interceptor_guard
 
 
+@app.route('/api/delete/wishbox', methods=["DELETE"])
+@mysql_decorator()
+def delete_wishbox(connection):
+    auth_headers_interceptor_guard = auth_controller.intercept_auth_headers()
+    if auth_headers_interceptor_guard is None:
+        return wishbox_controller.delete_wishbox(connection, token_service)
+    return auth_headers_interceptor_guard
+
+
 @app.route('/api/create/wishes', methods=["POST"])
 @mysql_decorator()
 def create_wishes(connection):
     auth_headers_interceptor_guard = auth_controller.intercept_auth_headers()
     if auth_headers_interceptor_guard is None:
-        return wishbox_controller.create_wishes(connection)
+        return wishbox_controller.create_wishes(connection, token_service)
     return auth_headers_interceptor_guard
 
+
+@app.route('/api/delete/wishes', methods=["DELETE"])
+@mysql_decorator()
+def delete_wishes(connection):
+    auth_headers_interceptor_guard = auth_controller.intercept_auth_headers()
+    if auth_headers_interceptor_guard is None:
+        return wishbox_controller.delete_wishes(connection, token_service)
+    return auth_headers_interceptor_guard
 
 
 @app.route('/api/update/wishes/contributors', methods=["POST"])

@@ -2,8 +2,8 @@ import {
   component$,
   useContext,
   $,
-  useClientEffect$,
   Slot,
+  useBrowserVisibleTask$,
 } from "@builder.io/qwik";
 import { modalsContext } from "~/context/context";
 
@@ -22,7 +22,7 @@ export const Modal = component$(() => {
     }
   });
 
-  useClientEffect$(
+  useBrowserVisibleTask$(
     () => {
       // Only runs in the client
       window.addEventListener("click", closeOutsideModal);
@@ -31,7 +31,7 @@ export const Modal = component$(() => {
         window.removeEventListener("click", closeOutsideModal);
       };
     },
-    { eagerness: "visible" }
+    { strategy: "document-ready" }
   );
 
   return (
