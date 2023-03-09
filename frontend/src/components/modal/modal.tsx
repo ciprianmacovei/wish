@@ -3,7 +3,7 @@ import {
   useContext,
   $,
   Slot,
-  useBrowserVisibleTask$,
+  useVisibleTask$,
 } from "@builder.io/qwik";
 import { modalsContext } from "~/context/context";
 
@@ -22,7 +22,7 @@ export const Modal = component$(() => {
     }
   });
 
-  useBrowserVisibleTask$(
+  useVisibleTask$(
     () => {
       // Only runs in the client
       window.addEventListener("click", closeOutsideModal);

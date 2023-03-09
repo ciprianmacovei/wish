@@ -8,6 +8,7 @@ export interface UserType {
 export interface ModalType {
   showCreateWishbox?: boolean;
   showCreateWishes?: boolean;
+  showPrivateWishesChoice?: boolean;
   loader: boolean;
 }
 

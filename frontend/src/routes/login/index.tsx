@@ -135,7 +135,7 @@ export default component$(() => {
                   validationError={loginState.passwordValidation}
                   validationMessage={loginState.passwordValidationErrorMessage}
                 />
-                <article class="flex items-center mb-2">
+                <article class="flex items-center mb-8">
                   <input
                     ref={rememberRef}
                     type="checkbox"

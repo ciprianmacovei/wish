@@ -1,4 +1,4 @@
-import { component$, useStore, $, useBrowserVisibleTask$ } from "@builder.io/qwik";
+import { component$, useStore, $, useVisibleTask$ } from "@builder.io/qwik";
 import { DocumentHead, useLocation, useNavigate } from "@builder.io/qwik-city";
 import { Button } from "~/components/buttons/button";
 import AuthService from "~/service/auth";
@@ -14,7 +14,7 @@ export default component$(() => {
     nagivation("/login/");
   });
 
-  useBrowserVisibleTask$(
+  useVisibleTask$(
     async () => {
       try {
         const response = await AuthService.registerConfirmed(location.params.token);

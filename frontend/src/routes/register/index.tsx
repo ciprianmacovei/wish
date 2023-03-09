@@ -1,9 +1,10 @@
-import { component$, $, useStore, QwikChangeEvent } from "@builder.io/qwik";
+import { component$, $, useStore, QwikChangeEvent, useContext } from "@builder.io/qwik";
 import { DocumentHead, useNavigate } from "@builder.io/qwik-city";
 import { AxiosResponse } from "axios";
 import Swal from "sweetalert2";
 import { Button } from "~/components/buttons/button";
 import { FormControl } from "~/components/form-control/form-control";
+import { applicationContext } from "~/context/context";
 import AuthService from "~/service/auth";
 import {
   CONFIRM_PASSWORD_DOSE_NOT_MATCH,
@@ -16,6 +17,7 @@ import {
 } from "~/validators/validators";
 
 export default component$(() => {
+  const applicationState = useContext(applicationContext);
   const registerState = useStore({
     email: "",
     emailValidation: false,
@@ -116,11 +118,13 @@ export default component$(() => {
 
     if (registerState.password && registerState.email && passMatch) {
       try {
+        applicationState.loading = true;
         registerState.disabledRegisterButton = true;
         const response: AxiosResponse = await AuthService.register(
           registerState.password,
           registerState.email
         );
+        applicationState.loading = false;
         Swal.fire({
           title: "Registration successful!",
           text: response.data.message,
@@ -129,6 +133,7 @@ export default component$(() => {
         });
         navigation("/login/");
       } catch (error: any) {
+        applicationState.loading = false;
         registerState.disabledRegisterButton = false;
         if (error) {
           Swal.fire({

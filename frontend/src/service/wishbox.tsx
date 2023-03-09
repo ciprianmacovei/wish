@@ -58,6 +58,18 @@ export default class WishboxService {
     return undefined;
   }
 
+  static getPrivateWishbox(token: string): Promise<AxiosResponse<any>> | undefined {
+    if (token) {
+      return axios.get(this.url + "/wishbox/" + token, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token,
+        },
+      });
+    }
+    return undefined;
+  }
+
   static createWishbox(
     wishbox_end_date: string,
     wishbox_name: string
@@ -98,7 +110,7 @@ export default class WishboxService {
     wish_name: string,
     wishbox_id: number,
     wish_link: string,
-    price: string,
+    price: string
   ): Promise<boolean> | undefined {
     if (this.token) {
       const bodyData = {

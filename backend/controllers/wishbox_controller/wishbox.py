@@ -41,7 +41,7 @@ def create_wishbox(connection: DBManager, token_service: Token):
             }
         )
 
-        wishbox_link = "http://localhost:8000/wishbox/%s" % wishbox_token
+        wishbox_link = "http://localhost/wish/%s" % wishbox_token
         wishbox_id = connection.cursor.lastrowid
 
         connection.cursor.execute(
@@ -86,37 +86,74 @@ def delete_wishbox(connection: DBManager, token_service: Token):
 
 def get_public_wishbox(connection: DBManager, token_service: Token, wishbox_token: str):
     decoded_token = token_service.decode_token(wishbox_token)
+    print(decoded_token, flush=True)
     wishbox_id = decoded_token.get('wishbox_id')
     user_id = decoded_token.get('user_id')
     token = decoded_token.get('token')
     try:
+        body_data = {}
+        row_data = []
+        wishes_array = []
+
         connection.cursor.execute(
             """
-            SELECT id, wishbox_name, CONVERT(wishbox_end_date, CHAR) as wishbox_end_date FROM wishbox
-            WHERE id = %(wishbox_id)s AND user_id= %(user_id)s
+            SELECT id, wishbox_name, CONVERT(wishbox_end_date, CHAR) as wishbox_end_date, link FROM wishbox
+            WHERE user_id = %(user_id)s and id = %(wishbox_id)s
             """,
-            {'wishbox_id': wishbox_id, 'user_id': user_id}
+            {
+                'user_id': user_id,
+                'wishbox_id': wishbox_id
+            }
         )
 
         db_result_wishbox = connection.cursor.fetchall()
-
         db_results_wishbox_ids = [row[0] for row in db_result_wishbox]
-        wishbox_id_sql = ','.join(map(str, db_results_wishbox_ids))
+        wishbox_id_sql = ','.join(map(str, list(set(db_results_wishbox_ids))))
+        if len(db_results_wishbox_ids) > 0:
+            connection.cursor.execute(
+                """
+                SELECT * FROM wishes
+                WHERE wishbox_id in ({})
+                """.format(wishbox_id_sql)
+            )
 
-        connection.cursor.execute(
-            """
-            SELECT * FROM wishes
-            WHERE wishbox_id in ({});
-            """.format(wishbox_id_sql)
-        )
-
-        db_result_wishes = connection.cursor.fetchall()
+            db_result_wishes = connection.cursor.fetchall()
+            if len(db_result_wishbox) > 0:
+                for wishbox in db_result_wishbox:
+                    body_data.update(
+                        {
+                            'wishbox_name': wishbox[1],
+                            'wishbox_id': wishbox[0],
+                            'wishbox_end_date': wishbox[2],
+                            'link': wishbox[3],
+                        }
+                    )
+                    if len(db_result_wishes) > 0:
+                        for wishes in db_result_wishes:
+                            if wishes[8] == wishbox[0]:
+                                wish_obj = {
+                                    'id': wishes[0],
+                                    'wish_name': wishes[1],
+                                    'wish_link': wishes[2],
+                                    'wish_taken': wishes[3],
+                                    'wishbox_img_url': wishes[4],
+                                    'likes': wishes[5],
+                                    'price': wishes[6],
+                                    'contributors': wishes[7],
+                                    'wishbox_id': wishes[8],
+                                }
+                                wishes_array.append(wish_obj)
+                                body_data.update(
+                                    {
+                                        'wishes': wishes_array
+                                    }
+                                )
+                        wishes_array = []
+                    row_data.append(body_data)
+                    body_data = {}
 
         return res.response_success_message_body({
-            "wishbox_end_date": db_result_wishbox[2],
-            "wishbox_name": db_result_wishbox[1],
-            "wishes": db_result_wishes,
-            "token": token,
+            "data": row_data
         })
     except Exception as e:
         print(e, flush=True)

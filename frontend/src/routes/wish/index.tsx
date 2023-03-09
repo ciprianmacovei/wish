@@ -7,7 +7,7 @@ import {
   useStore,
   useResource$,
   Resource,
-  useBrowserVisibleTask$,
+  useVisibleTask$,
   useSignal,
 } from "@builder.io/qwik";
 import { DocumentHead, useNavigate } from "@builder.io/qwik-city";
@@ -28,6 +28,8 @@ import {
   WISH_NAME_REQUIRED,
 } from "~/validators/validators";
 import { GuardLayout } from "../guard/guard-layout";
+import { WishboxCard } from "~/components/card/wishbox";
+import { WishesCard } from "~/components/card/wishes";
 
 interface WishboxState {
   wishboxName: string;
@@ -129,7 +131,7 @@ export default component$(() => {
     }
   });
 
-  useBrowserVisibleTask$(() => {
+  useVisibleTask$(() => {
     if (!onMount.value) {
       wishboxState.refreshResource = { value: true };
       onMount.value = true;
@@ -265,7 +267,7 @@ export default component$(() => {
         } else {
           WishboxService.noTokenRequest(navigation);
         }
-        appState.loading = false;       
+        appState.loading = false;
       } catch (e) {
         modalsState.loader = false;
         modalsState.showCreateWishbox = false;
@@ -333,9 +335,6 @@ export default component$(() => {
   return (
     <GuardLayout>
       <>
-        <section class="mt-[20vh]">
-          <Navbar />
-        </section>
         <section class="flex w-full justify-center items-center">
           <section class="flex flex-col w-8/12 justify-center items-center gap-4">
             <article>
@@ -368,167 +367,11 @@ export default component$(() => {
                       </section>
                     ) : (
                       <section class="w-full">
-                        {wishboxArray.map((wishbox: Wishbox) => {
-                          return (
-                            <section class="w-full flex flex-col justify-center items-center my-5">
-                              <section class="w-full flex flex-col min-h-[100px] border-solid border-[1px] border-black rounded-[4px] py-[0.8em] px-[2em] duration-200 hover:text-black hover:translate-x-[-0.25rem] hover:translate-y-[-0.25rem] hover:shadow-[0.25rem_0.25rem_black] active:translate-0 active:shadow-none hover:bg-teal-400">
-                                <article class="flex w-full">
-                                  <div class="flex w-1/3 flex-col gap-s justify-center">
-                                    <h1 class="font-nuito text-[30px]">
-                                      {wishbox.wishbox_name}
-                                    </h1>
-                                    <p class="font-nuito text-[11px]">
-                                      Expires on: {wishbox.wishbox_end_date}
-                                    </p>
-                                  </div>
-                                  <div class="flex flex-col justify-end items-start w-2/3 gap-5">
-                                    <article class="flex justify-end gap-1 items-center w-full">
-                                      <p class="font-nuito">
-                                        WISHBOX Public Link
-                                      </p>
-                                      <Button
-                                        size="sm"
-                                        text={
-                                          wishboxState.wishboxCopyAction
-                                            .value &&
-                                          wishboxState.wishboxCopyAction.id ===
-                                            wishbox.wishbox_id
-                                            ? "Copied"
-                                            : "Copy"
-                                        }
-                                        onClick={$(() =>
-                                          onCopyClipboard(wishbox)
-                                        )}
-                                      ></Button>
-                                    </article>
-                                    <article class="flex self-end gap-2">
-                                      <Button size="md" text="Edit"></Button>
-                                      <Button
-                                        size="md"
-                                        text="Delete"
-                                        onClick={$(() =>
-                                          onDeleteWishbox(wishbox)
-                                        )}
-                                      ></Button>
-                                      <Button
-                                        onClick={$(() =>
-                                          openCreateWishesModal(wishbox)
-                                        )}
-                                        size="md"
-                                        text="Add Wish"
-                                      ></Button>
-                                    </article>
-                                  </div>
-                                </article>
-                                {wishbox?.wishes?.length &&
-                                  wishbox?.wishes?.length !== 0 && (
-                                    <section class="w-full flex flex-col my-5">
-                                      <p
-                                        class="text-center my-5"
-                                        onClick$={$(() =>
-                                          onExpandWishbox(wishbox)
-                                        )}
-                                      >
-                                        Expand to see wishes
-                                      </p>
-                                      {wishboxState.expandWishbox.value &&
-                                        wishboxState.expandWishbox.id ===
-                                          wishbox?.wishbox_id && (
-                                          <ul class="w-full flex flex-col gap-2">
-                                            {wishbox.wishes.map(
-                                              (wish: Wishes) => (
-                                                <li class="border-lime-100 border-solid border-[3px] hover:bg-[#ff90e8] rounded-[4px] py-[0.8em] px-[2em] duration-200 hover:text-black hover:translate-x-[-0.25rem] hover:translate-y-[-0.25rem] hover:shadow-[0.25rem_0.25rem_black] active:translate-0 active:shadow-none">
-                                                  <section class="p-2">
-                                                    <article class="w-full flex">
-                                                      <div class="flex flex-col">
-                                                        <p class="font-nuito">
-                                                          Wish name:
-                                                          {wish.wish_name}
-                                                        </p>
-                                                        <div class="max-w-[200px] max-h-[200px] w-auto h-auto">
-                                                          {wish.wishbox_img_url ? (
-                                                            <img
-                                                              src={
-                                                                wish.wishbox_img_url
-                                                              }
-                                                              alt="wish link image"
-                                                            />
-                                                          ) : (
-                                                            <img
-                                                              src="/images/question.png"
-                                                              alt="wish link image"
-                                                            />
-                                                          )}
-                                                        </div>
-                                                      </div>
-                                                      <div class="ml-auto flex flex-col gap-2">
-                                                        <div class="font-nuito max-w-xs">
-                                                          <Button
-                                                            text={
-                                                              wishState
-                                                                .wishCopyAction
-                                                                .value &&
-                                                              wish.id ===
-                                                                wishState
-                                                                  .wishCopyAction
-                                                                  .id
-                                                                ? "Copied"
-                                                                : "Copy"
-                                                            }
-                                                            onClick={$(() =>
-                                                              onCopyWishClipboard(
-                                                                wish
-                                                              )
-                                                            )}
-                                                          />
-                                                        </div>
-                                                        <p class="font-nuito font-bold text-center">
-                                                          Price: {wish.price}
-                                                        </p>
-                                                      </div>
-                                                    </article>
-                                                    <article class="w-full flex justify-between items-center">
-                                                      <div class="flex items-center gap-1">
-                                                        <p>Taken: </p>
-                                                        <div>
-                                                          {wish.wish_taken ===
-                                                          1 ? (
-                                                            <div class="font-nuito">
-                                                              IsTaken
-                                                            </div>
-                                                          ) : (
-                                                            <div class="font-nuito">
-                                                              NotTaken
-                                                            </div>
-                                                          )}
-                                                        </div>
-                                                      </div>
-                                                      <div class="flex items-center gap-1">
-                                                        <Button
-                                                          text="Edit"
-                                                          size="md"
-                                                        />
-                                                        <Button
-                                                          text="Delete"
-                                                          size="md"
-                                                          onClick={$(() =>
-                                                            onDeleteWish(wish)
-                                                          )}
-                                                        />
-                                                      </div>
-                                                    </article>
-                                                  </section>
-                                                </li>
-                                              )
-                                            )}
-                                          </ul>
-                                        )}
-                                    </section>
-                                  )}
-                              </section>
-                            </section>
-                          );
-                        })}
+                        {wishboxArray.map((wishbox: Wishbox) => (
+                          <WishboxCard wishbox={wishbox} createWish={$(() => openCreateWishesModal(wishbox))}>
+                            <WishesCard wishes={wishbox.wishes} onDeleteWish={onDeleteWish}/>
+                          </WishboxCard>
+                        ))}
                       </section>
                     )}
                   </div>

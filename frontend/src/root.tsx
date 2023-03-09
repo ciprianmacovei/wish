@@ -28,7 +28,7 @@ export default component$(() => {
       <body lang="en">
         <RouterOutlet />
         <ServiceWorkerRegister />
-        <script src="https://use.fontawesome.com/9392801cbf.js"></script>
+        <script src="https://kit.fontawesome.com/682d677c31.js" crossOrigin="anonymous"></script>
       </body>
     </QwikCityProvider>
   );

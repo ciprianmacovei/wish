@@ -1,0 +1,1 @@
+export const PRIVATE_LINK_NAVIGATION_KEY = "private_link_navigation";

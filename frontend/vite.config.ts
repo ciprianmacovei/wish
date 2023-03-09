@@ -6,7 +6,7 @@ import tsconfigPaths from "vite-tsconfig-paths";
 export default defineConfig(() => {
   return {
     optimizeDeps: {
-      include: ['sweetalert2', 'axios'],
+      include: ["sweetalert2", "axios", "gsap"],
     },
     plugins: [qwikCity(), qwikVite(), tsconfigPaths()],
     preview: {
